@@ -200,3 +200,49 @@ first we create a reducer function where we will write the logic to update the s
     </ul>
 
 ```
+
+## useMemo
+It is a react hook that kets you cache the result of a function between rereners if none of it's depencies has changed
+
+### How to use
+
+Let's say we have an "expensiveFunction" that performs some heavy operations and returns the result.
+
+```
+  const expensiveFunction = (value: number) => {
+    for (let i = 0; i < 200000000; i++) {}
+    console.log("calculated");
+    return value + "hello";
+  };
+```
+
+And we are using it in a component with a theme and a value state, and only want to call the "expensiveFunction" when the value changes, if the value doesn't change it returns us the memomized value and prevents recalculation when other state changes in this case the "theme" state.
+
+```
+  const { onChange, theme } = useContext(ThemeContext);
+  const [value, setValue] = useState(0);
+
+  const expensiveResult = useMemo(() => {
+    return expensiveFunction(value);
+  }, [value]);
+
+   return (
+    <div className="flex items-center flex-col">
+      <h3 className="text-3xl font-semibold">Test useMemo</h3>
+      <div
+        className={`h-[200px] w-[200px] border transition flex justify-center items-center ${
+          theme === "dark" ? "bg-black" : "bg-white"
+        }`}
+      >
+        <button className="border p-3 text-xs bg-black" onClick={onChange}>
+          Change theme
+        </button>
+      </div>
+      <div className="flex flex-row gap-x-2">
+        <button onClick={() => setValue((prev) => prev - 1)}>-</button>
+        <h2 className="text-xl font-semibold">{value}</h2>
+        <button onClick={() => setValue((prev) => prev + 1)}>+</button>
+      </div>
+    </div>
+  );
+```
